@@ -22,6 +22,7 @@
       color: white;
       font-family: Arial, sans-serif;
       font-size: 22px;
+      text-shadow: 1px 1px 5px cyan;
     }
   </style>
 </head>
@@ -45,6 +46,9 @@
     let tallies = 0;
     let lastAngle = 0;
 
+    // Colors for glow effect
+    const colors = ["cyan", "magenta", "lime", "yellow", "orange", "hotpink", "aqua"];
+
     function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const centerX = canvas.width / 2;
@@ -54,20 +58,24 @@
         const theta = angle + (i * (2 * Math.PI / numCircles));
         const x = centerX + radius * Math.cos(theta);
         const y = centerY + radius * Math.sin(theta);
+
         ctx.beginPath();
-        ctx.arc(x, y, 8, 0, 2 * Math.PI);
-        ctx.fillStyle = "cyan";
+        ctx.arc(x, y, 10, 0, 2 * Math.PI);
+        // Change color every revolution
+        const colorIndex = (revolutions % colors.length);
+        ctx.fillStyle = colors[colorIndex];
+        ctx.shadowColor = colors[colorIndex];
+        ctx.shadowBlur = 20;
         ctx.fill();
       }
 
-      // Update revolution tracking
       angle += speed;
 
       // Detect full revolution
       if (lastAngle < 2 * Math.PI && angle >= 2 * Math.PI) {
         revolutions++;
         if (revolutions % 5 === 0) tallies++;
-        angle -= 2 * Math.PI; // reset rotation
+        angle -= 2 * Math.PI;
         counter.innerHTML = `Revolutions: ${revolutions}<br>Tallies: ${tallies}`;
       }
 
