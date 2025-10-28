@@ -1,55 +1,81 @@
-import turtle
-import math
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Circle Revolution Counter</title>
+  <style>
+    body {
+      background-color: black;
+      overflow: hidden;
+      margin: 0;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background-color: black;
+    }
+    #counter {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+  <div id="counter">Revolutions: 0<br>Tallies: 0</div>
+  <canvas id="canvas"></canvas>
 
-# --- Setup ---
-screen = turtle.Screen()
-screen.bgcolor("black")
-screen.title("Circle Revolution Counter")
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const counter = document.getElementById("counter");
 
-pen = turtle.Turtle()
-pen.hideturtle()
-pen.speed(0)
-pen.color("white")
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-circles = []
-num_circles = 20
-radius = 100
+    const numCircles = 20;
+    const radius = 120;
+    const speed = 0.05; // revolution speed
+    let angle = 0;
+    let revolutions = 0;
+    let tallies = 0;
+    let lastAngle = 0;
 
-# Create 20 small circle markers
-for i in range(num_circles):
-    c = turtle.Turtle()
-    c.shape("circle")
-    c.color("cyan")
-    c.penup()
-    c.speed(0)
-    circles.append(c)
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
 
-angle = 0
-revolutions = 0
-tally = 0
+      for (let i = 0; i < numCircles; i++) {
+        const theta = angle + (i * (2 * Math.PI / numCircles));
+        const x = centerX + radius * Math.cos(theta);
+        const y = centerY + radius * Math.sin(theta);
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = "cyan";
+        ctx.fill();
+      }
 
-# --- Main loop ---
-while True:
-    # Update circle positions
-    for i, c in enumerate(circles):
-        theta = angle + (i * (360 / num_circles))
-        x = radius * math.cos(math.radians(theta))
-        y = radius * math.sin(math.radians(theta))
-        c.goto(x, y)
-    
-    # Increment angle
-    angle += 5
-    if angle >= 360:
-        angle = 0
-        revolutions += 1
-        print(f"Revolution: {revolutions}")
+      // Update revolution tracking
+      angle += speed;
 
-        # Every 5 revolutions, add a tally
-        if revolutions % 5 == 0:
-            tally += 1
-            pen.clear()
-            pen.goto(-20, 150)
-            pen.write(f"Tallies: {tally}", align="left", font=("Arial", 18, "bold"))
-    
-    # Control animation speed
-    screen.update()
+      // Detect full revolution
+      if (lastAngle < 2 * Math.PI && angle >= 2 * Math.PI) {
+        revolutions++;
+        if (revolutions % 5 === 0) tallies++;
+        angle -= 2 * Math.PI; // reset rotation
+        counter.innerHTML = `Revolutions: ${revolutions}<br>Tallies: ${tallies}`;
+      }
+
+      lastAngle = angle;
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
