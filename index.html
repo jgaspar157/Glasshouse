@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Circle Revolution Counter</title>
+  <style>
+    body {
+      background-color: black;
+      overflow: hidden;
+      margin: 0;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background-color: black;
+    }
+    #counter {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+  <div id="counter">Revolutions: 0<br>Tallies: 0</div>
+  <canvas id="canvas"></canvas>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const counter = document.getElementById("counter");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const numCircles = 20;
+    const radius = 120;
+    const speed = 0.05; // revolution speed
+    let angle = 0;
+    let revolutions = 0;
+    let tallies = 0;
+    let lastAngle = 0;
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+
+      for (let i = 0; i < numCircles; i++) {
+        const theta = angle + (i * (2 * Math.PI / numCircles));
+        const x = centerX + radius * Math.cos(theta);
+        const y = centerY + radius * Math.sin(theta);
+        ctx.beginPath();
+        ctx.arc(x, y, 8, 0, 2 * Math.PI);
+        ctx.fillStyle = "cyan";
+        ctx.fill();
+      }
+
+      // Update revolution tracking
+      angle += speed;
+
+      // Detect full revolution
+      if (lastAngle < 2 * Math.PI && angle >= 2 * Math.PI) {
+        revolutions++;
+        if (revolutions % 5 === 0) tallies++;
+        angle -= 2 * Math.PI; // reset rotation
+        counter.innerHTML = `Revolutions: ${revolutions}<br>Tallies: ${tallies}`;
+      }
+
+      lastAngle = angle;
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
